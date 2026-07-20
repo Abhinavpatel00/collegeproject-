@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}MDAAS — ML Malware Detection{% endblock %}
+{% block nav_ml %}active{% endblock %}
+
+{% block content %}
+<section class="hero container-narrow">
+    <div class="hero-badge">
+        <span class="dot"></span>
+        Random Forest · PE header analysis
+    </div>
+    <h1>ML-powered detection with <span>MDAAS</span></h1>
+    <p>
+        Upload Windows executables for instant classification. Our model extracts
+        Portable Executable features and predicts malware with 99% accuracy.
+    </p>
+    <div class="hero-actions">
+        <a href="#upload" class="btn-mdaas btn-primary-mdaas">
+            <i class="fas fa-upload"></i> Upload executable
+        </a>
+        <a href="http://127.0.0.1:5000" class="btn-mdaas btn-ghost-mdaas">
+            <i class="fas fa-globe"></i> Static analysis
+        </a>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-file-code"></i></div>
+            <h3>.exe &amp; .dll</h3>
+            <p>Supports Windows portable executables with PE header feature extraction.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+            <h3>Instant results</h3>
+            <p>On-device inference — no external API required for classification.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>99% accuracy</h3>
+            <p>Random Forest trained on curated benign and malicious samples.</p>
+        </div>
+    </div>
+</section>
+
+<section id="upload" class="section-block container-narrow">
+    <h2 class="section-title">Analyze executable</h2>
+    <p class="section-subtitle">Drop a file below or click to browse. Supported formats: .exe, .dll</p>
+
+    {% if error %}
+        <div class="alert-mdaas alert-danger-mdaas">{{ error }}</div>
+    {% endif %}
+
+    <div class="two-col">
+        <div class="panel">
+            <div class="panel-header">
+                <i class="fas fa-microchip" style="color: var(--mdaas-accent-2);"></i>
+                <h2>File upload</h2>
+            </div>
+            <form id="analysisForm" action="/analyze" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div class="dropzone" id="dropzone">
+                        <div class="dropzone-icon"><i class="fas fa-file-shield"></i></div>
+                        <div class="dropzone-text">Drag &amp; drop an executable here, or click to browse</div>
+                        <input type="file" name="file" id="file" accept=".exe,.dll">
+                    </div>
+                    <div id="filePreview" class="file-preview"></div>
+                </div>
+                <button type="submit" class="btn-mdaas btn-primary-mdaas w-100 justify-content-center">
+                    <i class="fas fa-brain"></i> Run ML analysis
+                </button>
+                <div class="loading-spinner">
+                    <div class="spinner-mdaas"></div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <i class="fas fa-terminal" style="color: var(--mdaas-success);"></i>
+                <h2>Analysis console</h2>
+            </div>
+            <div id="bash-output" class="terminal">
+                <p class="line"><span class="prompt">mdaas@ml</span> $ model loaded — awaiting file...</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const fileInput = document.getElementById('file');
+    const filePreview = document.getElementById('filePreview');
+    const dropzone = document.getElementById('dropzone');
+    const bashOutput = document.getElementById('bash-output');
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        filePreview.textContent = file ? `Selected: ${file.name}` : '';
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'));
+    });
+
+    function log(msg, cls = '') {
+        bashOutput.innerHTML += `<p class="line ${cls}"><span class="prompt">mdaas@ml</span> $ ${msg}</p>`;
+        bashOutput.scrollTop = bashOutput.scrollHeight;
+    }
+
+    document.getElementById('analysisForm').addEventListener('submit', () => {
+        log('Reading PE headers...');
+        setTimeout(() => log('Extracting 23 feature vectors...'), 600);
+        setTimeout(() => log('Running Random Forest inference...', 'warn'), 1200);
+        document.querySelector('.loading-spinner').style.display = 'block';
+    });
+</script>
+{% endblock %}

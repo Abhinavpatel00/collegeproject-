@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}MDAAS — ML Result{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: 3rem 0;">
+    <h1 class="section-title text-center">ML Analysis Result</h1>
+    <p class="section-subtitle text-center">Random Forest classification based on PE header features.</p>
+
+    {% if result.type == "file" %}
+        {% if result.prediction == "Malware" %}
+        <div class="verdict-banner verdict-danger">
+            <i class="fas fa-skull-crossbones" style="color: var(--mdaas-danger);"></i>
+            <h2>Malware detected</h2>
+            <p>The model classified <strong>{{ result.file_name }}</strong> as malicious.</p>
+        </div>
+        {% else %}
+        <div class="verdict-banner verdict-safe">
+            <i class="fas fa-shield-check" style="color: var(--mdaas-success);"></i>
+            <h2>File is safe</h2>
+            <p>The model classified <strong>{{ result.file_name }}</strong> as benign.</p>
+        </div>
+        {% endif %}
+
+        <div class="panel">
+            <div class="result-meta">
+                <div class="meta-item"><span>File name</span><strong>{{ result.file_name }}</strong></div>
+                <div class="meta-item"><span>Analysis type</span><strong>Machine Learning</strong></div>
+                <div class="meta-item">
+                    <span>Verdict</span>
+                    <strong style="color: {{ 'var(--mdaas-danger)' if result.prediction == 'Malware' else 'var(--mdaas-success)' }};">
+                        {{ result.prediction }}
+                    </strong>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert-mdaas alert-danger-mdaas text-center">
+            <i class="fas fa-circle-exclamation"></i> No results available.
+        </div>
+    {% endif %}
+
+    <div class="text-center" style="margin-top: 2rem;">
+        <a href="/" class="btn-mdaas btn-primary-mdaas">
+            <i class="fas fa-arrow-left"></i> Analyze another file
+        </a>
+    </div>
+</div>
+{% endblock %}

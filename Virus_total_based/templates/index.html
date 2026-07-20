@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}MDAAS — Malware Detection &amp; Analysis{% endblock %}
+{% block nav_home %}active{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="hero container-narrow">
+    <div class="hero-badge">
+        <span class="dot"></span>
+        Threat intelligence platform
+    </div>
+    <h1>Secure your files with <span>MDAAS</span></h1>
+    <p>
+        Malware Detection and Analysis as a Service combines VirusTotal static scanning
+        with machine-learning PE analysis for fast, actionable security insights.
+    </p>
+    <div class="hero-actions">
+        <a href="#analyze" class="btn-mdaas btn-primary-mdaas">
+            <i class="fas fa-search"></i> Start Analysis
+        </a>
+        <a href="http://127.0.0.1:5001" class="btn-mdaas btn-ghost-mdaas">
+            <i class="fas fa-brain"></i> ML Detection
+        </a>
+    </div>
+
+    <div id="features" class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Static Analysis</h3>
+            <p>Scan files, URLs, and hashes against 70+ antivirus engines via VirusTotal.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-robot"></i></div>
+            <h3>ML Classification</h3>
+            <p>Random Forest model trained on PE headers detects malware in executables.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+            <h3>Visual Reports</h3>
+            <p>Clear verdicts, detection breakdowns, and charts for every scan.</p>
+        </div>
+    </div>
+</section>
+
+<section id="analyze" class="section-block container-narrow">
+    <h2 class="section-title">Static Analysis</h2>
+    <p class="section-subtitle">Upload a file, enter a URL, or submit a hash for VirusTotal scanning.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert-mdaas alert-danger-mdaas">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="two-col">
+        <div class="panel">
+            <div class="panel-header">
+                <i class="fas fa-shield-virus" style="color: var(--mdaas-accent);"></i>
+                <h2>Submit for scanning</h2>
+            </div>
+            <form id="analysisForm" action="/analyze" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label-mdaas" for="file">File upload</label>
+                    <div class="dropzone" id="dropzone">
+                        <div class="dropzone-icon"><i class="fas fa-file-arrow-up"></i></div>
+                        <div class="dropzone-text">Drag &amp; drop a file here, or click to browse</div>
+                        <input type="file" name="file" id="file">
+                    </div>
+                    <div id="filePreview" class="file-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label-mdaas" for="url">URL analysis</label>
+                    <input type="text" class="form-control-mdaas" name="url" id="url" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label-mdaas" for="file_hash">File hash</label>
+                    <input type="text" class="form-control-mdaas" name="file_hash" id="file_hash" placeholder="MD5, SHA-1, or SHA-256">
+                </div>
+                <button type="submit" class="btn-mdaas btn-primary-mdaas w-100 justify-content-center">
+                    <i class="fas fa-bolt"></i> Analyze Now
+                </button>
+                <div class="loading-spinner">
+                    <div class="spinner-mdaas"></div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <i class="fas fa-terminal" style="color: var(--mdaas-success);"></i>
+                <h2>Scan console</h2>
+            </div>
+            <div id="bash-output" class="terminal">
+                <p class="line"><span class="prompt">mdaas@static</span> $ awaiting input...</p>
+            </div>
+        </div>
+    </div>
+
+    {% if recent_results %}
+    <h2 class="section-title">Recent scans</h2>
+    <p class="section-subtitle">Your latest analysis results from this session.</p>
+    <div class="results-grid">
+        {% for result in recent_results %}
+        <div class="result-card-mdaas">
+            <div class="card-head">{{ result.file_name }}</div>
+            <div class="card-body">
+                <p style="margin: 0 0 0.35rem; font-size: 0.85rem; color: var(--mdaas-muted);">
+                    <i class="fas fa-calendar-alt"></i> {{ result.scan_date }}
+                </p>
+                <p style="margin: 0 0 0.75rem;">
+                    <strong>{{ result.positives }}</strong> / {{ result.total }} detections
+                </p>
+                <button type="button" class="btn-mdaas btn-ghost-mdaas btn-sm" data-bs-toggle="modal" data-bs-target="#resultModal{{ loop.index }}">
+                    View details
+                </button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="resultModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Analysis — {{ result.file_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="result-meta">
+                            <div class="meta-item"><span>Scan date</span><strong>{{ result.scan_date }}</strong></div>
+                            <div class="meta-item"><span>Detections</span><strong>{{ result.positives }}/{{ result.total }}</strong></div>
+                            <div class="meta-item">
+                                <span>Verdict</span>
+                                <strong style="color: {{ 'var(--mdaas-danger)' if result.positives > 0 else 'var(--mdaas-success)' }};">
+                                    {{ 'Malware' if result.positives > 0 else 'Clean' }}
+                                </strong>
+                            </div>
+                        </div>
+                        {% if result.detections %}
+                        <ul class="detection-list">
+                            {% for detection in result.detections %}
+                            <li>
+                                <span><strong>{{ detection.engine }}</strong> — {{ detection.result }}</span>
+                                <i class="fas fa-virus text-danger"></i>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <canvas id="modalDetectionChart{{ loop.index }}" style="max-height: 280px; margin-top: 1rem;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const fileInput = document.getElementById('file');
+    const filePreview = document.getElementById('filePreview');
+    const dropzone = document.getElementById('dropzone');
+    const bashOutput = document.getElementById('bash-output');
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        filePreview.textContent = file ? `Selected: ${file.name}` : '';
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'));
+    });
+
+    function log(msg, cls = '') {
+        bashOutput.innerHTML += `<p class="line ${cls}"><span class="prompt">mdaas@static</span> $ ${msg}</p>`;
+        bashOutput.scrollTop = bashOutput.scrollHeight;
+    }
+
+    document.getElementById('analysisForm').addEventListener('submit', () => {
+        log('Initializing scan pipeline...');
+        setTimeout(() => log('Sending payload to VirusTotal API...'), 800);
+        setTimeout(() => log('Aggregating engine results...', 'warn'), 1600);
+        document.querySelector('.loading-spinner').style.display = 'block';
+    });
+
+    function showChart(index, positives, total) {
+        const canvas = document.getElementById(`modalDetectionChart${index}`);
+        if (!canvas || canvas.dataset.rendered) return;
+        canvas.dataset.rendered = '1';
+        new Chart(canvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Detected', 'Clean'],
+                datasets: [{
+                    data: [positives, total - positives],
+                    backgroundColor: ['rgba(239, 68, 68, 0.75)', 'rgba(6, 182, 212, 0.75)'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+
+    {% for result in recent_results %}
+    document.getElementById('resultModal{{ loop.index }}').addEventListener('shown.bs.modal', () => {
+        showChart({{ loop.index }}, {{ result.positives }}, {{ result.total }});
+    });
+    {% endfor %}
+</script>
+{% endblock %}

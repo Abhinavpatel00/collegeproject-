@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MDAAS{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mdaas.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="mdaas-nav">
+        <a href="/" class="brand">
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="MDAAS logo">
+            <div class="brand-text">
+                <span class="brand-name">MDAAS</span>
+                <span class="brand-tagline">Detection &amp; Analysis</span>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="{% block nav_home %}{% endblock %}">Home</a>
+            <a href="http://127.0.0.1:5001" class="{% block nav_ml %}{% endblock %}">ML Detection</a>
+            <a href="/#analyze">Analyze</a>
+            <a href="/#features">Features</a>
+        </div>
+        <div class="nav-actions">
+            <button id="toggleTheme" class="icon-btn" type="button" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        {% block content %}{% endblock %}
+
+        <footer class="mdaas-footer">
+            <p>&copy; 2026 <strong>MDAAS</strong> — Malware Detection and Analysis as a Service</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const root = document.documentElement;
+        const toggleBtn = document.getElementById('toggleTheme');
+        const saved = localStorage.getItem('mdaas-theme') || 'dark';
+        root.setAttribute('data-theme', saved);
+        toggleBtn.innerHTML = saved === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        toggleBtn.addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('mdaas-theme', next);
+            toggleBtn.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}MDAAS — Detailed Report{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: 3rem 0;">
+    <h1 class="section-title text-center">Detailed Analysis</h1>
+    <p class="section-subtitle text-center">Full engine-by-engine breakdown from VirusTotal.</p>
+
+    <div class="panel">
+        <div class="result-meta">
+            <div class="meta-item"><span>Scan date</span><strong>{{ result.scan_date }}</strong></div>
+            <div class="meta-item"><span>Detections</span><strong>{{ result.positives }} / {{ result.total }}</strong></div>
+            <div class="meta-item"><span>SHA-256</span><strong style="font-size: 0.75rem; word-break: break-all;">{{ result.sha256 }}</strong></div>
+        </div>
+
+        <ul class="detection-list">
+            {% for engine, details in result.scans.items() %}
+            <li>
+                <span>
+                    <strong>{{ engine }}</strong> — {{ details.result }}
+                    <small style="color: var(--mdaas-muted);">(v{{ details.version }})</small>
+                </span>
+                {% if details.detected %}
+                    <i class="fas fa-virus" style="color: var(--mdaas-danger);"></i>
+                {% else %}
+                    <i class="fas fa-check-circle" style="color: var(--mdaas-success);"></i>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="text-center" style="margin-top: 2rem;">
+        <a href="{{ url_for('index') }}" class="btn-mdaas btn-primary-mdaas">
+            <i class="fas fa-arrow-left"></i> Back to home
+        </a>
+    </div>
+</div>
+{% endblock %}
