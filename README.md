@@ -48,10 +48,6 @@ The tool supports the following file types for static analysis:
 
 Below is a quick walkthrough demonstrating the **Static Analysis using API** feature in action.
 
-**Upload Page**  
-![Upload Page](Image/Staticw.png)  
-*Description: A user selects a file from their local directory for analysis.*
-
 **Result Page**  
 ![Result Page](Assets/Image/apiresult1.png)
 ![Result Page](Assets/Image/apiresult2.png)
@@ -68,7 +64,6 @@ Below is a quick walkthrough demonstrating the **Static Analysis using API** fea
     - **Scan Date**: Date of the last scan for the submitted file/URL.
     - **Detection Ratio**: Ratio of the VirusTotal engines that detected a threat.
     - **Detailed Results**: A breakdown of results from different scanning engines.
-![apiworkflow](Assets/Image/apiworkflow.png)
 ---
 
 ### Benefits of Static Analysis using API
@@ -145,17 +140,29 @@ This feature is specifically designed for the following file types:
 
 Below is a visual walkthrough showing how the **Machine Learning-Based Detection** feature works.
 
-**Upload Page**  
-![Upload Page](Assets/Image/mlw.png)  
-*Description: The user selects an executable file for analysis.*
+**1. ML Detection Landing Page**  
+![ML Detection Landing Page](Assets/projectimages/image_one.png)  
+*Description: Overview of the Machine Learning Detection module with model metrics and instant classification prompt.*
 
-**Analysis Results**  
-![Analysis Results](path/to/analysis_results_image.png)  
-*Description: Results of the ML-based detection showing whether the file is benign or malicious.*
+**2. Executable Upload Interface & Console**  
+![Upload Interface](Assets/projectimages/image_two.png)  
+*Description: File upload drop zone supporting `.exe` and `.dll` files alongside real-time analysis console.*
 
-> **Video Demo**  
-> For a detailed walkthrough, watch the video below:  
-> [![Watch the Demo](Assets/Image/mlw.png)](https://youtu.be/ETgdAF1WzU8)
+**3. Executable File Selection**  
+![Selected Executable File](Assets/projectimages/image_three.png)  
+*Description: Selecting a Windows executable (`Minishoot.exe`) ready for PE feature extraction.*
+
+**4. Classification Verdict**  
+![Analysis Result Verdict](Assets/projectimages/image_four.png)  
+*Description: Random Forest classification verdict indicating the file is benign (`Safe`).*
+
+**5. Model Confidence & Risk Scores**  
+![Model Confidence and Probability](Assets/projectimages/image_five.png)  
+*Description: Comprehensive evaluation details showing malware risk score (25.0%), safe confidence (75.0%), and evaluated features.*
+
+**6. Evaluated PE Header Metrics**  
+![Evaluated PE Header Metrics](Assets/projectimages/image_six.png)  
+*Description: Detailed breakdown of key Portable Executable (PE) header features extracted during analysis.*
 
 ---
 
