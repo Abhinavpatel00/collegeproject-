@@ -626,3 +626,304 @@ body::before {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .section-block { padding: 2rem 0 3rem; }
+
+/* Custom Result Page Styling matching image5 and image6 */
+.result-page-wrap {
+  padding: 2rem 0 4rem;
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+/* Verdict Banner */
+.result-banner {
+  text-align: center;
+  padding: 2rem 2.5rem;
+  border-radius: var(--mdaas-radius);
+  margin-bottom: 2rem;
+  border: 1px solid transparent;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--mdaas-shadow);
+}
+
+.verdict-card-safe {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: inset 0 0 40px rgba(16, 185, 129, 0.05), 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.verdict-card-danger {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.05), 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.banner-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.banner-sub {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #94a3b8;
+}
+
+.banner-sub strong {
+  color: #f8fafc;
+}
+
+/* Section Cards */
+.result-section-card {
+  background: rgba(15, 23, 42, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--mdaas-radius);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme="light"] .result-section-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-cyan { color: #06b6d4; }
+.icon-purple { color: #a855f7; }
+.icon-teal { color: #10b981; }
+
+.section-card-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--mdaas-text);
+  letter-spacing: -0.01em;
+}
+
+.section-card-subtitle {
+  color: var(--mdaas-muted);
+  font-size: 0.925rem;
+  margin-top: -0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Grid Rows for Stat Boxes */
+.stats-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.stats-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .stats-row-3, .stats-row-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-row-3, .stats-row-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-stat-box {
+  background: rgba(7, 12, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+:root[data-theme="light"] .result-stat-box {
+  background: rgba(240, 244, 250, 0.8);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.stat-box-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mdaas-muted);
+}
+
+.stat-box-value {
+  font-size: 2.15rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.val-danger { color: #ff5252; }
+.val-success { color: #00e676; }
+.val-cyan { color: #00e5ff; }
+
+.stat-box-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--mdaas-text);
+  word-break: break-all;
+}
+
+/* Probability Progress Bar */
+.prob-progress-wrapper {
+  margin-top: 1.75rem;
+}
+
+.prob-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--mdaas-text);
+  margin-bottom: 0.65rem;
+}
+
+.prob-progress-track {
+  height: 14px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.prob-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff5e62, #ff9966);
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(255, 94, 98, 0.5);
+}
+
+/* PE Metrics Grid (4 columns on desktop matching image6) */
+.pe-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .pe-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .pe-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .pe-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pe-metric-item {
+  background: rgba(7, 12, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+:root[data-theme="light"] .pe-metric-item {
+  background: rgba(240, 244, 250, 0.8);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.pe-metric-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.35);
+}
+
+.pe-metric-icon {
+  font-size: 1.1rem;
+  color: var(--mdaas-muted);
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.pe-metric-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pe-metric-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--mdaas-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pe-metric-val {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--mdaas-text);
+  word-break: break-all;
+}
+
+/* Bottom Action Button */
+.result-action-row {
+  text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.btn-analyze-another {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem 2.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00d2ff 0%, #7f00ff 100%);
+  color: #ffffff !important;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none !important;
+  box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-analyze-another:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 45px rgba(6, 182, 212, 0.6);
+  color: #ffffff !important;
+}

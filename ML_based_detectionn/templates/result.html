@@ -1,48 +1,182 @@
 {% extends "base.html" %}
-{% block title %}MDAAS — ML Result{% endblock %}
+{% block title %}MDAAS — ML Detection Result{% endblock %}
+{% block nav_ml %}active{% endblock %}
 
 {% block content %}
-<div class="container-narrow" style="padding: 3rem 0;">
-    <h1 class="section-title text-center">ML Analysis Result</h1>
-    <p class="section-subtitle text-center">Random Forest classification based on PE header features.</p>
-
+<div class="container-narrow result-page-wrap">
     {% if result.type == "file" %}
-        {% if result.prediction == "Malware" %}
-        <div class="verdict-banner verdict-danger">
-            <i class="fas fa-skull-crossbones" style="color: var(--mdaas-danger);"></i>
-            <h2>Malware detected</h2>
-            <p>The model classified <strong>{{ result.file_name }}</strong> as malicious.</p>
+        <!-- Verdict Banner Card -->
+        <div class="result-banner {% if result.is_malware %}verdict-card-danger{% else %}verdict-card-safe{% endif %}">
+            {% if result.is_malware %}
+                <h2 class="banner-title">Malware Detected!</h2>
+                <p class="banner-sub">The model evaluated <strong>{{ result.file_name }}</strong> as malware with <strong>{{ result.malware_prob }}%</strong> risk score.</p>
+            {% else %}
+                <h2 class="banner-title">File is Safe</h2>
+                <p class="banner-sub">The model evaluated <strong>{{ result.file_name }}</strong> as benign with <strong>{{ result.safe_prob }}%</strong> safety score.</p>
+            {% endif %}
         </div>
-        {% else %}
-        <div class="verdict-banner verdict-safe">
-            <i class="fas fa-shield-check" style="color: var(--mdaas-success);"></i>
-            <h2>File is safe</h2>
-            <p>The model classified <strong>{{ result.file_name }}</strong> as benign.</p>
-        </div>
-        {% endif %}
 
-        <div class="panel">
-            <div class="result-meta">
-                <div class="meta-item"><span>File name</span><strong>{{ result.file_name }}</strong></div>
-                <div class="meta-item"><span>Analysis type</span><strong>Machine Learning</strong></div>
-                <div class="meta-item">
-                    <span>Verdict</span>
-                    <strong style="color: {{ 'var(--mdaas-danger)' if result.prediction == 'Malware' else 'var(--mdaas-success)' }};">
-                        {{ result.prediction }}
-                    </strong>
+        <!-- Section 1: Model Evaluation Confidence & Probability -->
+        <div class="result-section-card">
+            <div class="section-card-header">
+                <i class="fa-solid fa-chart-pie section-icon icon-cyan"></i>
+                <h3>Model Evaluation Confidence & Probability</h3>
+            </div>
+            
+            <div class="stats-row-3">
+                <div class="result-stat-box">
+                    <span class="stat-box-label">MALWARE RISK SCORE</span>
+                    <div class="stat-box-value val-danger">{{ result.malware_prob }}%</div>
+                </div>
+                <div class="result-stat-box">
+                    <span class="stat-box-label">SAFE CONFIDENCE</span>
+                    <div class="stat-box-value val-success">{{ result.safe_prob }}%</div>
+                </div>
+                <div class="result-stat-box">
+                    <span class="stat-box-label">MODEL CONFIDENCE</span>
+                    <div class="stat-box-value val-cyan">{{ result.confidence }}%</div>
+                </div>
+            </div>
+
+            <div class="prob-progress-wrapper">
+                <div class="prob-progress-labels">
+                    <span class="label-left">Safe ({{ result.safe_prob }}%)</span>
+                    <span class="label-right">Malware Risk ({{ result.malware_prob }}%)</span>
+                </div>
+                <div class="prob-progress-track">
+                    <div class="prob-progress-fill" style="width: {% if result.is_malware %}{{ result.malware_prob }}{% else %}{{ result.safe_prob }}{% endif %}%;"></div>
                 </div>
             </div>
         </div>
+
+        <!-- Section 2: Analysis Summary -->
+        <div class="result-section-card">
+            <div class="section-card-header">
+                <i class="fa-solid fa-circle-info section-icon icon-purple"></i>
+                <h3>Analysis Summary</h3>
+            </div>
+            
+            <div class="stats-row-4">
+                <div class="result-stat-box">
+                    <span class="stat-box-label">FILE NAME</span>
+                    <div class="stat-box-text">{{ result.file_name }}</div>
+                </div>
+                <div class="result-stat-box">
+                    <span class="stat-box-label">CLASSIFICATION</span>
+                    <div class="stat-box-text {% if result.is_malware %}val-danger{% else %}val-success{% endif %}">
+                        {{ result.prediction }}
+                    </div>
+                </div>
+                <div class="result-stat-box">
+                    <span class="stat-box-label">PROBABILITY</span>
+                    <div class="stat-box-text">
+                        {{ result.malware_prob }}% Malware
+                    </div>
+                </div>
+                <div class="result-stat-box">
+                    <span class="stat-box-label">FEATURES EVALUATED</span>
+                    <div class="stat-box-text">23 PE Vectors</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Evaluated PE Header Metrics -->
+        <div class="result-section-card">
+            <div class="section-card-header">
+                <i class="fa-solid fa-microchip section-icon icon-teal"></i>
+                <h3>Evaluated PE Header Metrics</h3>
+            </div>
+            <p class="section-card-subtitle">Key Portable Executable features extracted and evaluated by the Random Forest classifier:</p>
+
+            <div class="pe-metrics-grid">
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-layer-group pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">PE Sections Count</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.sections_count }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-location-arrow pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Entry Point Address</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.entry_point }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-train pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Image Base Address</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.image_base }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-wave-square pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Min Section Entropy</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.min_entropy }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-file-export pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Export Directory Size</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.export_size }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-file-import pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Import Directory Size</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.import_size }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-file-lines pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Size of Headers</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.size_of_headers }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-code-fork pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Min Section Virtual Size</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.min_virtual_size }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-shield-halved pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">DLL Characteristics</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.dll_characteristics }}</span>
+                    </div>
+                </div>
+                <div class="pe-metric-item">
+                    <i class="fa-solid fa-hashtag pe-metric-icon"></i>
+                    <div class="pe-metric-details">
+                        <span class="pe-metric-label">Header Checksum</span>
+                        <span class="pe-metric-val">{{ result.pe_metrics.checksum }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="result-action-row">
+            <a href="/" class="btn-analyze-another">
+                <i class="fa-solid fa-arrow-left"></i> Analyze another file
+            </a>
+        </div>
     {% else %}
-        <div class="alert-mdaas alert-danger-mdaas text-center">
+        <div class="alert-mdaas alert-danger-mdaas text-center my-5">
             <i class="fas fa-circle-exclamation"></i> No results available.
         </div>
+        <div class="text-center">
+            <a href="/" class="btn-analyze-another">
+                <i class="fa-solid fa-arrow-left"></i> Return to home
+            </a>
+        </div>
     {% endif %}
-
-    <div class="text-center" style="margin-top: 2rem;">
-        <a href="/" class="btn-mdaas btn-primary-mdaas">
-            <i class="fas fa-arrow-left"></i> Analyze another file
-        </a>
-    </div>
 </div>
 {% endblock %}
